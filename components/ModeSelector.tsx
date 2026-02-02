@@ -1,22 +1,40 @@
 
-import React, { useState } from 'react';
-import { MessageMode } from '../types';
-import { MODES } from '../constants';
+import React, { useState, useRef, useEffect } from 'react';
+import { MODES } from '../types';
 
 interface ModeSelectorProps {
-  onModeChange: (mode: MessageMode) => void;
+  onModeChange: (mode: string) => void;
 }
 
 const ModeSelector: React.FC<ModeSelectorProps> = ({ onModeChange }) => {
-  const [selectedMode, setSelectedMode] = useState<MessageMode>(MODES[0]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMode, setSelectedMode] = useState(MODES[0]);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleConfirm = () => {
-    onModeChange(selectedMode);
-    alert(`模式已切换为: ${selectedMode}`);
+  const filteredModes = MODES.filter(mode =>
+    mode.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (mode: string) => {
+    setSelectedMode(mode);
+    setSearchTerm('');
+    setIsOpen(false);
+    onModeChange(mode);
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+    <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm">
       <div className="flex items-center space-x-2">
         <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
           <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,32 +42,52 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({ onModeChange }) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
-        <h1 className="text-lg font-bold text-gray-800">IM对话构造器</h1>
+        <h1 className="text-lg font-bold text-gray-800">对话构造器</h1>
       </div>
       
-      <div className="flex items-center space-x-2">
-        <div className="relative">
-          <select
-            value={selectedMode}
-            onChange={(e) => setSelectedMode(e.target.value as MessageMode)}
-            className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full pl-4 pr-10 py-2 outline-none cursor-pointer hover:bg-gray-100 transition-colors"
-          >
-            {MODES.map(mode => (
-              <option key={mode} value={mode}>{mode}</option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-        <button
-          onClick={handleConfirm}
-          className="bg-blue-600 text-white text-sm font-medium px-5 py-2 rounded-full hover:bg-blue-700 active:scale-95 transition-all shadow-sm"
+      <div className="relative w-64" ref={dropdownRef}>
+        <div 
+          onClick={() => setIsOpen(!isOpen)}
+          className={`group flex items-center justify-between bg-white border ${isOpen ? 'border-blue-500 ring-2 ring-blue-50' : 'border-gray-300'} text-gray-900 text-sm rounded-full pl-4 pr-3 py-2 cursor-pointer transition-all hover:bg-gray-50`}
         >
-          确认
-        </button>
+          <span className="truncate flex-1 font-medium">{isOpen ? (searchTerm || "搜索作品...") : selectedMode}</span>
+          <svg className={`w-4 h-4 ml-2 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+
+        {isOpen && (
+          <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="p-2 border-b border-gray-100">
+              <input
+                autoFocus
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="搜索作品..."
+                className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <div className="max-h-60 overflow-y-auto custom-scrollbar">
+              {filteredModes.length > 0 ? (
+                filteredModes.map((mode) => (
+                  <div
+                    key={mode}
+                    onClick={() => handleSelect(mode)}
+                    className={`px-4 py-2.5 text-sm cursor-pointer transition-colors ${
+                      selectedMode === mode ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {mode}
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-8 text-center text-xs text-gray-400">未找到匹配作品</div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
