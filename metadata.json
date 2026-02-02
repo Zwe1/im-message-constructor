@@ -1,0 +1,5 @@
+{
+  "name": "IM对话构造器",
+  "description": "一个功能强大的IM对话记录构造工具，支持模拟iPhone样式的聊天界面，可自定义发言人、消息类型及对话模式。",
+  "requestFramePermissions": []
+}
