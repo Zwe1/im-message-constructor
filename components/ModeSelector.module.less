@@ -1,0 +1,143 @@
+
+.container {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .logo {
+    width: 2rem;
+    height: 2rem;
+    background-color: #2563eb;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg { width: 1.25rem; height: 1.25rem; color: white; }
+  }
+
+  h1 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+}
+
+.dropdownWrapper {
+  position: relative;
+  width: 16rem;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  color: #111827;
+  font-size: 0.875rem;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { background-color: #f9fafb; }
+  
+  &.isOpen {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(239, 246, 255, 1);
+  }
+
+  .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .arrow {
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    color: #9ca3af;
+    transition: transform 0.2s;
+    &.isOpen { transform: rotate(180deg); }
+  }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+.searchBox {
+  padding: 0.5rem;
+  border-bottom: 1px solid #f3f4f6;
+
+  input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    outline: none;
+    &:focus { border-color: #60a5fa; box-shadow: 0 0 0 1px #60a5fa; }
+  }
+}
+
+.menuList {
+  max-height: 15rem;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+}
+
+.menuItem {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: colors 0.2s;
+  color: #374151;
+
+  &:hover { background-color: #f9fafb; }
+
+  &.selected {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+  }
+}
+
+.noResults {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
